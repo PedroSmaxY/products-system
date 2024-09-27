@@ -24,7 +24,12 @@ public class ProductDAO {
 
     public Product findById(Long id) {
         try (EntityManager em = emf.createEntityManager()) {
-            return em.find(Product.class, id);
+            Product product = em.find(Product.class, id);
+
+            if (product == null)
+                throw new ProductDAOException("Product with id: " + id + " not found");
+
+            return product;
         } catch (Exception e) {
             throw new ProductDAOException("Failed to find product with id: " + id, e);
         }
@@ -43,11 +48,13 @@ public class ProductDAO {
     public void delete(Long id) {
         try (EntityManager em = emf.createEntityManager()) {
             Product product = em.find(Product.class, id);
-            if (product != null) {
-                em.getTransaction().begin();
-                em.remove(product);
-                em.getTransaction().commit();
-            }
+
+            if (product == null)
+                throw new ProductDAOException("Product with id: " + id + " not found");
+
+            em.getTransaction().begin();
+            em.remove(product);
+            em.getTransaction().commit();
         } catch (Exception e) {
             throw new ProductDAOException("Failed to delete product with id: " + id, e);
         }
