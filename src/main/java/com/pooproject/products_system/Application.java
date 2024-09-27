@@ -2,9 +2,6 @@ package com.pooproject.products_system;
 
 import com.pooproject.products_system.dao.ProductDAO;
 import com.pooproject.products_system.models.Product;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-
 import java.math.BigDecimal;
 
 public class Application {
