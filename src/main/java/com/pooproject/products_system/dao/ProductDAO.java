@@ -29,7 +29,7 @@ public class ProductDAO {
     }
 
     @Transactional
-    public void change(Product product) {
+    public void update(Product product) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.merge(product);
