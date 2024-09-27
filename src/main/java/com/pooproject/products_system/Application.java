@@ -1,11 +1,19 @@
 package com.pooproject.products_system;
 
+import com.pooproject.products_system.dao.ProductDAO;
+import com.pooproject.products_system.models.Product;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import java.math.BigDecimal;
+
 public class Application {
     public static void main(String[] args) {
-        System.out.println("olá mundo!");
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
+        var dao = new ProductDAO();
+
+        dao.save(new Product(null, "macarrão", "macarrão barato", new BigDecimal("6.7"), 2));
+
+        var products = dao.findAll();
+        products.forEach(System.out::println);
     }
 }
