@@ -1,7 +1,7 @@
 package com.pooproject.products_system.dao;
 
 import com.pooproject.products_system.exceptions.ProductDAOException;
-import com.pooproject.products_system.models.Product;
+import com.pooproject.products_system.models.product.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
