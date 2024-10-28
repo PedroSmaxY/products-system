@@ -66,11 +66,4 @@ public class TelaCredito extends JFrame {
 
         pack();
     }
-
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> {
-            TelaCredito tela = new TelaCredito();
-            tela.setVisible(true);
-        });
-    }
 }
