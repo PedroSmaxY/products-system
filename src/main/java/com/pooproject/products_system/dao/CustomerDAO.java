@@ -4,7 +4,7 @@ import com.pooproject.products_system.domain.customer.Customer;
 
 public class CustomerDAO extends GenericDAO<Customer> {
 
-    public CustomerDAO(Class<Customer> entityClass) {
+    public CustomerDAO() {
         super(Customer.class);
     }
 }
