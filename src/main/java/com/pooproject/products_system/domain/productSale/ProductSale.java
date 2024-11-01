@@ -1,6 +1,5 @@
 package com.pooproject.products_system.domain.productSale;
 
-
 import com.pooproject.products_system.domain.product.Product;
 import com.pooproject.products_system.domain.sale.Sale;
 import jakarta.persistence.*;
@@ -13,26 +12,27 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = ProductSale.TABLE_NAME)
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Table(name = "product_sale")
 public class ProductSale {
-    protected static final String TABLE_NAME = "product_sale";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "sale_id")
+    @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
 
+    @Column(nullable = false)
     private Integer quantity;
 
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 }
