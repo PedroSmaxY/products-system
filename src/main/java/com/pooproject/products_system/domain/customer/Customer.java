@@ -1,4 +1,4 @@
-package com.pooproject.products_system.domain.costumer;
+package com.pooproject.products_system.domain.customer;
 
 import com.pooproject.products_system.domain.sale.Sale;
 import jakarta.persistence.*;
@@ -14,14 +14,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Table(name = Costumer.TABLE_NAME)
-public class Costumer {
-    protected static final String TABLE_NAME = "costumers";
+@Table(name = "customers")
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
     private String address;
@@ -30,6 +30,6 @@ public class Costumer {
 
     private String email;
 
-    @OneToMany
-    private List<Sale> sale;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sale> sales;
 }
