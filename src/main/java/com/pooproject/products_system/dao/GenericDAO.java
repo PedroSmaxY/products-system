@@ -17,23 +17,31 @@ public class GenericDAO<T> {
         return emf.createEntityManager();
     }
 
-    public void save(T entity) {
+    public T save(T entity) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(entity);
             em.getTransaction().commit();
+            return entity;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;  // rethrow exception after rollback
         } finally {
             em.close();
         }
     }
 
-    public void update(T entity) {
+    public T update(T entity) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(entity);
+            T mergedEntity = em.merge(entity);
             em.getTransaction().commit();
+            return mergedEntity;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
         } finally {
             em.close();
         }
@@ -48,6 +56,9 @@ public class GenericDAO<T> {
                 em.remove(entity);
             }
             em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
         } finally {
             em.close();
         }
@@ -62,12 +73,19 @@ public class GenericDAO<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<T> findAll() {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery("from " + entityClass.getSimpleName(), entityClass).getResultList();
         } finally {
             em.close();
+        }
+    }
+
+    public static void closeEntityManagerFactory() {
+        if (emf.isOpen()) {
+            emf.close();
         }
     }
 }
