@@ -37,5 +37,6 @@ public class Product {
         this.name = productDTO.name();
         this.price = productDTO.price();
         this.quantity = productDTO.quantity();
+        this.category = productDTO.category();
     }
 }

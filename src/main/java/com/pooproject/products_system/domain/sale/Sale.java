@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -23,6 +24,8 @@ public class Sale {
     private Long id;
 
     private LocalDate currentDate = LocalDate.now();
+
+    private BigDecimal totalPrice;
 
     @ManyToOne
     private Costumer costumer;
