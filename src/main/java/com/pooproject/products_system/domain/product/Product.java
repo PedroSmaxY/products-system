@@ -1,6 +1,7 @@
-package com.pooproject.products_system.models.product;
+package com.pooproject.products_system.domain.product;
 
 import com.pooproject.products_system.dto.ProductDTO;
+import com.pooproject.products_system.domain.category.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,12 +30,11 @@ public class Product {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
     private Category category;
 
     public Product(ProductDTO productDTO) {
         this.name = productDTO.name();
-        this.category = productDTO.category();
         this.price = productDTO.price();
         this.quantity = productDTO.quantity();
     }

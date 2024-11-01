@@ -1,6 +1,6 @@
 package com.pooproject.products_system.dto;
 
-import com.pooproject.products_system.models.product.Category;
+import com.pooproject.products_system.domain.product.Category;
 
 import java.math.BigDecimal;
 

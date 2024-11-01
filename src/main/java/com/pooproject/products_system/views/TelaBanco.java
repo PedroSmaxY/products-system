@@ -2,8 +2,8 @@ package com.pooproject.products_system.views;
 
 
 import com.pooproject.products_system.dao.ProductDAO;
-import com.pooproject.products_system.models.product.Category;
-import com.pooproject.products_system.models.product.Product;
+import com.pooproject.products_system.domain.product.Category;
+import com.pooproject.products_system.domain.product.Product;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;

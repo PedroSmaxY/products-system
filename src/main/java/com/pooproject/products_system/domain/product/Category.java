@@ -1,4 +1,4 @@
-package com.pooproject.products_system.models.product;
+package com.pooproject.products_system.domain.product;
 
 public enum Category {
     FRESCOS,

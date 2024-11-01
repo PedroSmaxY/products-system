@@ -1,7 +1,7 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
     <persistence-unit name="my-persistence-unit" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>com.pooproject.products_system.models.product.Product</class>
+        <class>com.pooproject.products_system.domain.product.Product</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://168.75.74.169:3041/db"/>
             <property name="jakarta.persistence.jdbc.user" value="admin"/>
