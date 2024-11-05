@@ -9,8 +9,8 @@ import java.util.Optional;
 public class CustomerService {
     private final CustomerDAO customerDAO;
 
-    public CustomerService(CustomerDAO customerDAO) {
-        this.customerDAO = customerDAO;
+    public CustomerService() {
+        this.customerDAO = new CustomerDAO();
     }
 
     public Customer save(Customer customer) {

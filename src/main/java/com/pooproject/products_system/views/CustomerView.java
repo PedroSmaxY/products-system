@@ -5,14 +5,15 @@
 package com.pooproject.products_system.views;
 
 import com.pooproject.products_system.domain.customer.Customer;
-import com.pooproject.products_system.domain.sale.Sale;
+import com.pooproject.products_system.dto.CustomerDTO;
+import com.pooproject.products_system.services.CustomerService;
 import com.pooproject.products_system.views.tableModels.CustomerTableModel;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.*;
 
 /**
@@ -21,7 +22,7 @@ import javax.swing.*;
  */
 public class CustomerView extends javax.swing.JFrame {
 
-    
+    private CustomerService customerService;
     private CustomerTableModel model;
     private List<Customer> customers;
     
@@ -29,8 +30,8 @@ public class CustomerView extends javax.swing.JFrame {
      * Creates new form CustomerView
      */
     public CustomerView() {
-        customers = new ArrayList<>();
-        customers.add(new Customer(null, "name", "address", "1231321132", "email@email.com", new ArrayList<>()));
+        customerService = new CustomerService();
+        customers = customerService.findAll();
         model = new CustomerTableModel(customers);
 
         initComponents();
@@ -170,11 +171,21 @@ public class CustomerView extends javax.swing.JFrame {
 
         jButtonSave.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButtonSave.setText("Salvar");
+        jButtonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveActionPerformed(evt);
+            }
+        });
 
         jTextSearch.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jButtonSearch.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButtonSearch.setText("Buscar");
+        jButtonSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSearchActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -246,6 +257,38 @@ public class CustomerView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+        // Get customer details from input fields
+        var name = jTextName.getText().trim();
+        var address = jTextAddress.getText().trim();
+        var phone = jTextPhone.getText().trim();
+        var email = jTextEmail.getText().trim();
+
+        // Check if the fields are not empty
+        if (name.isEmpty() || address.isEmpty() || phone.isEmpty() || email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos os campos precisam ser preenchidos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Create a new CustomerDTO
+        var newCustomerDTO = new CustomerDTO(name, address, phone, email);
+
+
+        updateCustomerTable();
+
+    }//GEN-LAST:event_jButtonSaveActionPerformed
+
+    private void updateCustomerTable() {
+        // Fetch the updated product list
+        List<Customer> updatedProducts = customerService.findAll();
+
+        // Update the model with the new list
+        model.setCustomers(updatedProducts);
+
+        // Notify the table that the data has changed
+        model.fireTableDataChanged();
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -39,6 +39,6 @@ public class Product {
         this.name = productDTO.name();
         this.price = productDTO.price();
         this.quantity = productDTO.quantity();
-        this.category = productDTO.category();  // Verifique se retorna Category ou ID
+        this.category = productDTO.category();
     }
 }
