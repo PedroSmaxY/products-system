@@ -272,18 +272,21 @@ public class CustomerView extends javax.swing.JFrame {
 
         // Create a new CustomerDTO
         var newCustomerDTO = new CustomerDTO(name, address, phone, email);
-
+        customerService.save(new Customer(newCustomerDTO));
 
         updateCustomerTable();
 
     }//GEN-LAST:event_jButtonSaveActionPerformed
 
+    private void jButtonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+    }//GEN-LAST:event_jButtonSaveActionPerformed
+
     private void updateCustomerTable() {
         // Fetch the updated product list
-        List<Customer> updatedProducts = customerService.findAll();
+        List<Customer> updatedCustomer = customerService.findAll();
 
         // Update the model with the new list
-        model.setCustomers(updatedProducts);
+        model.setCustomers(updatedCustomer);
 
         // Notify the table that the data has changed
         model.fireTableDataChanged();
