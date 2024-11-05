@@ -9,8 +9,8 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryDAO categoryDAO;
 
-    public CategoryService(CategoryDAO categoryDAO) {
-        this.categoryDAO = categoryDAO;
+    public CategoryService() {
+        this.categoryDAO = new CategoryDAO();
     }
 
     public Category save(Category category) {
@@ -19,6 +19,10 @@ public class CategoryService {
 
     public Optional<Category> findById(Long id) {
         return Optional.ofNullable(categoryDAO.findById(id));
+    }
+
+    public Optional<Category> findByName(String name) {
+        return Optional.ofNullable(categoryDAO.findByName(name));
     }
 
     public List<Category> findAll() {
