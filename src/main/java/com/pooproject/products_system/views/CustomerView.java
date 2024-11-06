@@ -139,7 +139,7 @@ public class CustomerView extends javax.swing.JFrame {
         jTextSearch = new javax.swing.JTextField();
         jButtonSearch = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Menu Clientes");
         setResizable(false);
 
@@ -257,7 +257,7 @@ public class CustomerView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+    private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // Get customer details from input fields
         var name = jTextName.getText().trim();
         var address = jTextAddress.getText().trim();
@@ -276,9 +276,20 @@ public class CustomerView extends javax.swing.JFrame {
 
         updateCustomerTable();
 
-    }//GEN-LAST:event_jButtonSaveActionPerformed
+    }                                           
 
     private void jButtonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+        // TODO add your handling code here:
+        String searchText = jTextSearch.getText().trim();
+
+        if (searchText.isEmpty()) {
+            // Se o campo de busca estiver vazio, carrega todos os produtos
+            updateCustomerTable();
+        } else {
+            List<Customer> filteredCustomers = customerService.findByNameContaining(searchText);
+            model.setCustomers(filteredCustomers);
+            model.fireTableDataChanged();
+        }
     }//GEN-LAST:event_jButtonSaveActionPerformed
 
     private void updateCustomerTable() {

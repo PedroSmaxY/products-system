@@ -51,6 +51,12 @@ public class ProductView extends javax.swing.JFrame {
 
         // Set the model for the JTable
         jTableProduct.setModel(model);
+        
+        List<String> categoryNames = new ArrayList<>();
+        categoryNames.add("---------");
+        categoryNames.addAll(categoryService.findAll().stream().map(Category::getName).toList());
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(categoryNames.toArray(new String[0])));
+        jComboBox1.setSelectedItem("---------");
 
         // Setup table listener
         setupTableListener();
@@ -167,7 +173,7 @@ public class ProductView extends javax.swing.JFrame {
         jButtonSearch = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Menu Produtos");
         setResizable(false);
 
@@ -208,12 +214,11 @@ public class ProductView extends javax.swing.JFrame {
 
         jButtonSearch.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButtonSearch.setText("Buscar");
-
-        List<String> categoryNames = new ArrayList<>();
-        categoryNames.add("----------");
-        categoryNames.addAll(categoryService.findAll().stream().map(Category::getName).toList());
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(categoryNames.toArray(new String[0])));
-        jComboBox1.setSelectedItem("----------");
+        jButtonSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSearchActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -335,6 +340,20 @@ public class ProductView extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_jButtonSaveActionPerformed
+
+    private void jButtonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSearchActionPerformed
+        // TODO add your handling code here:
+        String searchText = jTextSearch.getText().trim();
+
+        if (searchText.isEmpty()) {
+            // Se o campo de busca estiver vazio, carrega todos os produtos
+            updateProductTable();
+        } else {
+            List<Product> filteredProducts = productService.findByNameContaining(searchText);
+            model.setProducts(filteredProducts);
+            model.fireTableDataChanged();
+        }
+    }//GEN-LAST:event_jButtonSearchActionPerformed
 
     private void updateProductTable() {
         // Fetch the updated product list

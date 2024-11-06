@@ -44,9 +44,19 @@ public class MainView extends javax.swing.JFrame {
 
         jButtonCustomer.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jButtonCustomer.setText("Clientes");
+        jButtonCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCustomerActionPerformed(evt);
+            }
+        });
 
         jButtonProduct.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jButtonProduct.setText("Produtos");
+        jButtonProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonProductActionPerformed(evt);
+            }
+        });
 
         jButtonSale.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jButtonSale.setText("Vendas");
@@ -105,6 +115,17 @@ public class MainView extends javax.swing.JFrame {
     private void jButtonSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaleActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonSaleActionPerformed
+
+    private void jButtonCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCustomerActionPerformed
+        // TODO add your handling code here:
+        new CustomerView().setVisible(true);
+        
+    }//GEN-LAST:event_jButtonCustomerActionPerformed
+
+    private void jButtonProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonProductActionPerformed
+        // TODO add your handling code here:
+        new ProductView().setVisible(true);
+    }//GEN-LAST:event_jButtonProductActionPerformed
 
     /**
      * @param args the command line arguments

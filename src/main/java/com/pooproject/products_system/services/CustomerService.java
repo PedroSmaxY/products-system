@@ -25,6 +25,10 @@ public class CustomerService {
     public List<Customer> findAll() {
         return customerDAO.findAll();
     }
+    
+    public List<Customer> findByNameContaining(String name) {
+        return customerDAO.findByNameContaining(name);
+    }
 
     public Customer update(Customer customer) {
         return customerDAO.update(customer);

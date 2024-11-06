@@ -24,6 +24,10 @@ public class ProductService {
     public List<Product> findAll() {
         return productDAO.findAll();
     }
+    
+    public List<Product> findByNameContaining(String name) {
+        return productDAO.findByNameContaining(name);
+    }
 
     public Product update(Product product) {
         return productDAO.update(product);
