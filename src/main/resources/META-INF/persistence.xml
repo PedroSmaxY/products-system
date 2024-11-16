@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
+    <persistence-unit name="my-persistence-unit" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Mapeamento das Entidades -->
+        <class>com.pooproject.products_system.domain.product.Product</class>
+        <class>com.pooproject.products_system.domain.category.Category</class>
+        <class>com.pooproject.products_system.domain.customer.Customer</class>
+        <class>com.pooproject.products_system.domain.sale.Sale</class>
+        <class>com.pooproject.products_system.domain.productSale.ProductSale</class>
+
+        <properties>
+            <!-- Configurações do Banco de Dados -->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://168.75.74.169:3041/db"/>
+            <property name="jakarta.persistence.jdbc.user" value="admin"/>
+            <property name="jakarta.persistence.jdbc.password" value="admin"/>
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+
+            <!-- Configurações do Hibernate -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
