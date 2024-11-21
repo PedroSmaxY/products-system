@@ -1,19 +1,45 @@
 package com.pooproject.products_system.views;
 
+import com.pooproject.products_system.domain.customer.Customer;
+import com.pooproject.products_system.domain.sale.Sale;
+import com.pooproject.products_system.services.CustomerService;
+import com.pooproject.products_system.services.SaleService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SaleHistoryView extends JFrame {
 
     private JTable jTableSales;
+    private List<Sale> sales;
+    private List<Sale> filteredSales;
     private JButton jButtonViewHistory;
     private SaleTableModel saleTableModel;
+    private SaleService saleService;
+    private CustomerService customerService;
+
+    private JTextField startDateField;
+    private JTextField endDateField;
+    private JTextField customerField;
+    private JButton searchButton;
+    private JButton exportButton;
 
     public SaleHistoryView() {
+        saleService = new SaleService();
+        customerService = new CustomerService();
+        sales = this.saleService.findAllSales();
+        filteredSales = new ArrayList<>(sales);
         initComponents();
     }
 
@@ -24,27 +50,56 @@ public class SaleHistoryView extends JFrame {
         saleTableModel = new SaleTableModel();
         jTableSales = new JTable(saleTableModel);
 
-        // Adicionando dados de exemplo
-        saleTableModel.addSale(new Sale(1L, "Cliente Exemplo"));
-        saleTableModel.addSale(new Sale(2L, "Cliente Exemplo 2"));
+        // Adicionando ordenação
+        TableRowSorter<SaleTableModel> sorter = new TableRowSorter<>(saleTableModel);
+        jTableSales.setRowSorter(sorter);
 
         JScrollPane jScrollPane = new JScrollPane(jTableSales);
 
+        // Adicionando os campos de data e cliente
+        JLabel startDateLabel = new JLabel("Data Início:");
+        JLabel endDateLabel = new JLabel("Data Fim:");
+        JLabel customerLabel = new JLabel("Cliente:");
+
+        startDateField = new JTextField(10);
+        endDateField = new JTextField(10);
+        customerField = new JTextField(10);
+
+        searchButton = new JButton("Buscar");
+        searchButton.setToolTipText("Filtrar vendas por datas e cliente");
+        searchButton.addActionListener(e -> searchSales());
+
+        exportButton = new JButton("Exportar para CSV");
+        exportButton.setToolTipText("Exportar vendas filtradas para um arquivo CSV");
+        exportButton.addActionListener(e -> exportToCSV());
+
         jButtonViewHistory = new JButton("Ver Histórico");
+        jButtonViewHistory.setToolTipText("Visualizar histórico detalhado do cliente");
         jButtonViewHistory.addActionListener(e -> showCustomerHistory());
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
 
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabelTitle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jScrollPane, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-                                        .addComponent(jButtonViewHistory, GroupLayout.Alignment.TRAILING))
-                                .addContainerGap())
+                layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabelTitle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane, GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(startDateLabel)
+                                        .addComponent(startDateField, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(endDateLabel)
+                                        .addComponent(endDateField, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(customerLabel)
+                                        .addComponent(customerField, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(searchButton)
+                                )
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(exportButton)
+                                        .addGap(10)
+                                        .addComponent(jButtonViewHistory)))
+                        .addContainerGap()
         );
 
         layout.setVerticalGroup(
@@ -54,7 +109,19 @@ public class SaleHistoryView extends JFrame {
                         .addGap(30)
                         .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
                         .addGap(18)
-                        .addComponent(jButtonViewHistory)
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(startDateLabel)
+                                .addComponent(startDateField)
+                                .addComponent(endDateLabel)
+                                .addComponent(endDateField)
+                                .addComponent(customerLabel)
+                                .addComponent(customerField)
+                                .addComponent(searchButton)
+                        )
+                        .addGap(18)
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(exportButton)
+                                .addComponent(jButtonViewHistory))
                         .addGap(20)
         );
 
@@ -64,24 +131,83 @@ public class SaleHistoryView extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
+    private void searchSales() {
+        try {
+            String startDateText = startDateField.getText();
+            String endDateText = endDateField.getText();
+            String customerName = customerField.getText().toLowerCase();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            LocalDate startDate = startDateText.isEmpty() ? null : LocalDate.parse(startDateText, formatter);
+            LocalDate endDate = endDateText.isEmpty() ? null : LocalDate.parse(endDateText, formatter);
+
+            filteredSales.clear();
+
+            for (Sale sale : sales) {
+                LocalDate saleDate = sale.getCurrentDate();
+                boolean matchesDate = (startDate == null || !saleDate.isBefore(startDate)) && (endDate == null || !saleDate.isAfter(endDate));
+                boolean matchesCustomer = customerName.isEmpty() || sale.getCustomer().getName().toLowerCase().contains(customerName);
+
+                if (matchesDate && matchesCustomer) {
+                    filteredSales.add(sale);
+                }
+            }
+
+            saleTableModel.fireTableDataChanged();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy.");
+        }
+    }
+
+    private void exportToCSV() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Salvar como...");
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            try (PrintWriter writer = new PrintWriter(fileChooser.getSelectedFile() + ".csv")) {
+                writer.println("ID,Cliente,Data");
+                for (Sale sale : filteredSales) {
+                    writer.printf("%d,%s,%s%n",
+                            sale.getId(),
+                            sale.getCustomer().getName(),
+                            sale.getCurrentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    );
+                }
+                JOptionPane.showMessageDialog(this, "Exportado com sucesso!");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao exportar: " + ex.getMessage());
+            }
+        }
+    }
+
     private void showCustomerHistory() {
         int selectedRow = jTableSales.getSelectedRow();
         if (selectedRow >= 0) {
             Sale selectedSale = saleTableModel.getSaleAt(selectedRow);
-            new CustomerHistoryView(selectedSale).setVisible(true);
+
+            Customer customer = customerService.findCustomerWithSales(selectedSale.getCustomer().getId());
+
+            if (customer != null) {
+                new CustomerHistoryView(selectedSale).setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Não foi possível carregar o histórico do cliente.");
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Selecione uma venda para ver o histórico.");
         }
     }
 
+
     private class SaleTableModel extends AbstractTableModel {
 
-        private final String[] columnNames = {"ID", "Cliente", "Deletar"};
-        private final List<Sale> sales = new ArrayList<>();
+        private final String[] columnNames = {"ID", "Cliente", "Data"};
 
         @Override
         public int getRowCount() {
-            return sales.size();
+            return filteredSales.size();
         }
 
         @Override
@@ -91,14 +217,18 @@ public class SaleHistoryView extends JFrame {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            Sale sale = sales.get(rowIndex);
+            Sale sale = filteredSales.get(rowIndex);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             switch (columnIndex) {
                 case 0:
                     return sale.getId();
                 case 1:
-                    return sale.getCustomer();
+                    return sale.getCustomer().getName();
+                case 2:
+                    LocalDate saleDate = sale.getCurrentDate();
+                    return saleDate != null ? saleDate.format(formatter) : "Data inválida";
                 default:
-                    return "🗑️";  // Emoji de lixeira na coluna "Deletar"
+                    return "";
             }
         }
 
@@ -107,42 +237,19 @@ public class SaleHistoryView extends JFrame {
             return columnNames[column];
         }
 
-        public void addSale(Sale sale) {
-            sales.add(sale);
-            fireTableDataChanged();
-        }
-
         public Sale getSaleAt(int rowIndex) {
-            return sales.get(rowIndex);
+            return filteredSales.get(rowIndex);
         }
     }
 
-    public static class Sale {
-        private Long id;
-        private String customer;
+    public class CustomerHistoryView extends JFrame {
 
-        public Sale(Long id, String customer) {
-            this.id = id;
-            this.customer = customer;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getCustomer() {
-            return customer;
-        }
-    }
-
-    // Classe para exibir o histórico de compras do cliente
-    private static class CustomerHistoryView extends JFrame {
         private JTable jTablePurchaseHistory;
-        private JButton jButtonViewDetails;
         private PurchaseHistoryTableModel purchaseHistoryTableModel;
+        private JButton jButtonViewDetails;
 
         public CustomerHistoryView(Sale sale) {
-            setTitle("Histórico de Compras - Cliente: " + sale.getCustomer());
+            setTitle("Histórico de Compras - Cliente: " + sale.getCustomer().getName());
             setSize(500, 300);
             setLocationRelativeTo(null);
 
@@ -152,9 +259,14 @@ public class SaleHistoryView extends JFrame {
             purchaseHistoryTableModel = new PurchaseHistoryTableModel();
             jTablePurchaseHistory = new JTable(purchaseHistoryTableModel);
 
-            // Exemplo de compras do cliente
-            purchaseHistoryTableModel.addPurchase(new Purchase("2023-11-10", new BigDecimal("250.00")));
-            purchaseHistoryTableModel.addPurchase(new Purchase("2023-11-11", new BigDecimal("180.00")));
+            // Carregar as compras da venda selecionada
+            sale.getProductSales().forEach(productSale ->
+                    purchaseHistoryTableModel.addPurchase(new Purchase(
+                            productSale.getProduct().getName(),
+                            productSale.getQuantity(),
+                            productSale.getPrice())
+                    )
+            );
 
             JScrollPane jScrollPane = new JScrollPane(jTablePurchaseHistory);
 
@@ -197,9 +309,9 @@ public class SaleHistoryView extends JFrame {
             }
         }
 
-        private class PurchaseHistoryTableModel extends AbstractTableModel {
+        private static class PurchaseHistoryTableModel extends AbstractTableModel {
 
-            private final String[] columnNames = {"Data", "Total", "Deletar"};
+            private final String[] columnNames = {"Produto", "Quantidade", "Preço Unitário", "Total"};
             private final List<Purchase> purchases = new ArrayList<>();
 
             @Override
@@ -217,11 +329,15 @@ public class SaleHistoryView extends JFrame {
                 Purchase purchase = purchases.get(rowIndex);
                 switch (columnIndex) {
                     case 0:
-                        return purchase.getDate();
+                        return purchase.getProductName();
                     case 1:
-                        return "R$ " + purchase.getTotal();
+                        return purchase.getQuantity();
+                    case 2:
+                        return purchase.getPrice().setScale(2);
+                    case 3:
+                        return purchase.getTotal().setScale(2);
                     default:
-                        return "🗑️";  // Emoji de lixeira na coluna "Deletar"
+                        return "";
                 }
             }
 
@@ -240,142 +356,54 @@ public class SaleHistoryView extends JFrame {
             }
         }
 
-        private static class Purchase {
-            private String date;
+        public static class PurchaseDetailsView extends JFrame {
+
+            public PurchaseDetailsView(Purchase purchase) {
+                setTitle("Detalhes da Compra");
+                setSize(400, 300);
+                setLocationRelativeTo(null);
+
+                JLabel jLabelTitle = new JLabel("Detalhes da Compra", JLabel.CENTER);
+                jLabelTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+
+                JPanel panel = new JPanel();
+                panel.setLayout(new GridLayout(4, 2, 10, 10));
+
+                panel.add(new JLabel("Produto:"));
+                panel.add(new JLabel(purchase.getProductName()));
+
+                panel.add(new JLabel("Quantidade:"));
+                panel.add(new JLabel(String.valueOf(purchase.getQuantity())));
+
+                panel.add(new JLabel("Preço Unitário:"));
+                panel.add(new JLabel(purchase.getPrice().setScale(2).toString()));
+
+                panel.add(new JLabel("Preço Total:"));
+                panel.add(new JLabel(purchase.getTotal().setScale(2).toString()));
+
+                getContentPane().add(jLabelTitle, BorderLayout.NORTH);
+                getContentPane().add(panel, BorderLayout.CENTER);
+
+                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            }
+        }
+
+        @Data
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class Purchase {
+
+            private String productName;
+            private int quantity;
+            private BigDecimal price;
             private BigDecimal total;
 
-            public Purchase(String date, BigDecimal total) {
-                this.date = date;
-                this.total = total;
-            }
-
-            public String getDate() {
-                return date;
-            }
-
-            public BigDecimal getTotal() {
-                return total;
-            }
-        }
-    }
-
-    // Classe para exibir os detalhes da compra
-    private static class PurchaseDetailsView extends JFrame {
-        private JTable jTableProductDetails;
-        private ProductDetailsTableModel productDetailsTableModel;
-
-        public PurchaseDetailsView(CustomerHistoryView.Purchase purchase) {
-            setTitle("Detalhes da Compra - Data: " + purchase.getDate());
-            setSize(500, 300);
-            setLocationRelativeTo(null);
-
-            JLabel jLabelTitle = new JLabel("Detalhes da Compra", JLabel.CENTER);
-            jLabelTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
-
-            productDetailsTableModel = new ProductDetailsTableModel();
-            jTableProductDetails = new JTable(productDetailsTableModel);
-
-            // Exemplo de produtos comprados
-            productDetailsTableModel.addProduct(new Product("Produto 1", 2, new BigDecimal("50.00")));
-            productDetailsTableModel.addProduct(new Product("Produto 2", 1, new BigDecimal("100.00")));
-
-            JScrollPane jScrollPane = new JScrollPane(jTableProductDetails);
-
-            GroupLayout layout = new GroupLayout(getContentPane());
-            getContentPane().setLayout(layout);
-
-            layout.setHorizontalGroup(
-                    layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelTitle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(jScrollPane, GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
-                                    .addContainerGap())
-            );
-
-            layout.setVerticalGroup(
-                    layout.createSequentialGroup()
-                            .addGap(20)
-                            .addComponent(jLabelTitle)
-                            .addGap(20)
-                            .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-                            .addGap(20)
-            );
-        }
-
-        private class ProductDetailsTableModel extends AbstractTableModel {
-
-            private final String[] columnNames = {"Produto", "Quantidade", "Valor Unitário", "Total"};
-            private final List<Product> products = new ArrayList<>();
-
-            @Override
-            public int getRowCount() {
-                return products.size();
-            }
-
-            @Override
-            public int getColumnCount() {
-                return columnNames.length;
-            }
-
-            @Override
-            public Object getValueAt(int rowIndex, int columnIndex) {
-                Product product = products.get(rowIndex);
-                switch (columnIndex) {
-                    case 0:
-                        return product.getName();
-                    case 1:
-                        return product.getQuantity();
-                    case 2:
-                        return "R$ " + product.getUnitPrice();
-                    case 3:
-                        return "R$ " + product.getTotal();
-                    default:
-                        return null;
-                }
-            }
-
-            @Override
-            public String getColumnName(int column) {
-                return columnNames[column];
-            }
-
-            public void addProduct(Product product) {
-                products.add(product);
-                fireTableDataChanged();
-            }
-        }
-
-        private static class Product {
-            private String name;
-            private int quantity;
-            private BigDecimal unitPrice;
-
-            public Product(String name, int quantity, BigDecimal unitPrice) {
-                this.name = name;
+            public Purchase(String productName, int quantity, BigDecimal price) {
+                this.productName = productName;
                 this.quantity = quantity;
-                this.unitPrice = unitPrice;
-            }
-
-            public String getName() {
-                return name;
-            }
-
-            public int getQuantity() {
-                return quantity;
-            }
-
-            public BigDecimal getUnitPrice() {
-                return unitPrice;
-            }
-
-            public BigDecimal getTotal() {
-                return unitPrice.multiply(BigDecimal.valueOf(quantity));
+                this.price = price;
+                this.total = price.multiply(BigDecimal.valueOf(quantity));
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new SaleHistoryView().setVisible(true));
     }
 }

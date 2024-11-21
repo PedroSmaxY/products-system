@@ -22,6 +22,10 @@ public class CustomerService {
         return Optional.ofNullable(customer);
     }
 
+    public Customer findCustomerWithSales(Long id) {
+        return this.customerDAO.findCustomerWithSales(id);
+    }
+
     public List<Customer> findAll() {
         return customerDAO.findAll();
     }

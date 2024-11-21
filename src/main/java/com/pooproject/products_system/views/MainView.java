@@ -4,6 +4,8 @@
  */
 package com.pooproject.products_system.views;
 
+import javax.swing.*;
+
 /**
  *
  * @author Pedro Henrique
@@ -120,7 +122,7 @@ public class MainView extends javax.swing.JFrame {
 
     private void jButtonSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaleActionPerformed
         // TODO add your handling code here:
-        new SaleView().setVisible(true);
+        SwingUtilities.invokeLater(SaleView::new);
     }//GEN-LAST:event_jButtonSaleActionPerformed
 
     private void jButtonCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCustomerActionPerformed

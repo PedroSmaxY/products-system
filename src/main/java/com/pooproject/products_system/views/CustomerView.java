@@ -111,6 +111,7 @@ public class CustomerView extends javax.swing.JFrame {
             JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {
+            customerService.delete(model.getCustomerAt(rowIndex).getId());
             model.removeCustomer(rowIndex);
         }
     }

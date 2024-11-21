@@ -2,7 +2,7 @@ package com.pooproject.products_system.views;
 
 import com.pooproject.products_system.domain.customer.Customer;
 import com.pooproject.products_system.domain.product.Product;
-import com.pooproject.products_system.domain.sale.Sale;
+import com.pooproject.products_system.dto.ProductSaleDTO;
 import com.pooproject.products_system.services.CustomerService;
 import com.pooproject.products_system.services.ProductService;
 import com.pooproject.products_system.services.SaleService;
@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,6 +31,9 @@ public class SaleView extends javax.swing.JFrame {
     private JButton jButtonSaveSale;
     private JButton jButtonCancelSale; // Novo botão para cancelar venda
 
+    private Customer activeCustomer;
+    private List<ProductSaleDTO> activeProducts;
+    private Product activeProduct;
     private SaleService saleService;
     private CustomerService customerService;
     private ProductService productService;
@@ -40,6 +44,7 @@ public class SaleView extends javax.swing.JFrame {
         saleService = new SaleService();
         customerService = new CustomerService();
         productService = new ProductService();
+        activeProducts = new ArrayList<>();
         initialize();
     }
 
@@ -257,6 +262,7 @@ public class SaleView extends javax.swing.JFrame {
                 int row = tableClientes.rowAtPoint(e.getPoint());
                 Customer selectedCustomer = customerService.findById((Long) tableClientes.getValueAt(row, 0)).orElse(null);
                 if (selectedCustomer != null) {
+                    activeCustomer = selectedCustomer;
                     jTextClient.setText(selectedCustomer.getName());
                     jButtonSelectClient.setEnabled(false); // Desativa o botão
                     jButtonCancelSale.setEnabled(true); // Ativa "Cancelar Venda"
@@ -326,6 +332,7 @@ public class SaleView extends javax.swing.JFrame {
                     if (selectedProduct != null) {
                         jTextProduct.setText(selectedProduct.getName());
                         jTextPrice.setText(selectedProduct.getPrice().toString());
+                        activeProduct = selectedProduct;
                         produtoFrame.dispose();
                     }
                 }
@@ -352,6 +359,9 @@ public class SaleView extends javax.swing.JFrame {
             String productName = jTextProduct.getText();
             String quantityText = jTextQuantity.getText();
             String priceText = jTextPrice.getText();
+            if (activeProduct != null) {
+                activeProducts.add(new ProductSaleDTO(activeProduct, Integer.valueOf(quantityText)));
+            }
 
             if (customerName.isEmpty() || productName.isEmpty() || quantityText.isEmpty() || priceText.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Preencha todos os campos!");
@@ -372,12 +382,31 @@ public class SaleView extends javax.swing.JFrame {
             jTextPrice.setText("");
         }
 
-        // Método para salvar a venda
-        private void salvarVenda() {
+    private void salvarVenda() {
+        try {
+            var newSale = saleService.createSale(activeCustomer);
 
+            activeProducts.forEach(productSaleDTO ->
+                    saleService.addProductToSale(
+                            newSale,
+                            productSaleDTO.product(),
+                            productSaleDTO.product().getPrice(),
+                            productSaleDTO.quantity()
+                    )
+            );
+
+            JOptionPane.showMessageDialog(this, "Venda salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+            cancelarVenda();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao salvar a venda: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
+    }
 
-        public static void main(String[] args) {
+
+    public static void main(String[] args) {
             SwingUtilities.invokeLater(() -> new SaleView());
         }
     }
