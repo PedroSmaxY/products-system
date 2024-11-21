@@ -20,4 +20,14 @@ public class CustomerDAO extends GenericDAO<Customer> {
             em.close();
         }
     }
+
+    public Customer findCustomerWithSales(Long customerId) {
+        EntityManager em = getEntityManager();
+        Customer customer = em.find(Customer.class, customerId);
+        if (customer != null) {
+            customer.getSales().size();
+        }
+        return customer;
+    }
+
 }

@@ -4,6 +4,8 @@
  */
 package com.pooproject.products_system.views;
 
+import javax.swing.*;
+
 /**
  *
  * @author Pedro Henrique
@@ -61,13 +63,14 @@ public class MainView extends javax.swing.JFrame {
         jButtonSale.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jButtonSale.setText("Vendas");
         jButtonSale.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSaleActionPerformed(evt);
-            }
+            public void actionPerformed(java.awt.event.ActionEvent evt) { jButtonSaleActionPerformed(evt); }
         });
 
         jButtonSaleHistory.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jButtonSaleHistory.setText("Histórico de Vendas");
+        jButtonSaleHistory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) { jButtonSaleHistoryActionPerformed(evt); }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -112,14 +115,19 @@ public class MainView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButtonSaleHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaleActionPerformed
+        // TODO add your handling code here:
+        new SaleHistoryView().setVisible(true);
+    }//GEN-LAST:event_jButtonSaleHistoryActionPerformed
+
     private void jButtonSaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaleActionPerformed
         // TODO add your handling code here:
+        SwingUtilities.invokeLater(SaleView::new);
     }//GEN-LAST:event_jButtonSaleActionPerformed
 
     private void jButtonCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCustomerActionPerformed
         // TODO add your handling code here:
         new CustomerView().setVisible(true);
-        
     }//GEN-LAST:event_jButtonCustomerActionPerformed
 
     private void jButtonProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonProductActionPerformed

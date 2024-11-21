@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -33,6 +34,14 @@ public class Sale {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductSale> productSales;
+
+    public void addProductSale(ProductSale productSale) {
+        if (this.productSales == null) {
+            this.productSales = new ArrayList<>();
+        }
+        this.productSales.add(productSale);
+        productSale.setSale(this);
+    }
 }
