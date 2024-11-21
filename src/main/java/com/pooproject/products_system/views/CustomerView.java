@@ -95,6 +95,7 @@ public class CustomerView extends javax.swing.JFrame {
             }
 
             model.fireTableDataChanged();
+            customerService.update(customer);
             dialog.dispose();
         });
 
