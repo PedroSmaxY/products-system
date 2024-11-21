@@ -15,6 +15,7 @@ public class SaleService {
     private final SaleDAO saleDAO = new SaleDAO();
     private final ProductSaleDAO productSaleDAO = new ProductSaleDAO();
     private final ProductSaleService productSaleService = new ProductSaleService(productSaleDAO);
+    private final ProductService productService = new ProductService();
 
     public Sale createSale(Customer customer) {
         Sale sale = new Sale();
@@ -32,6 +33,14 @@ public class SaleService {
 
         BigDecimal total = sale.getTotalPrice().add(price.multiply(new BigDecimal(quantity)));
         sale.setTotalPrice(total);
+
+        if (product.getQuantity() >= quantity) {
+            product.setQuantity(product.getQuantity() - quantity);
+
+            productService.update(product);
+        } else {
+            throw new IllegalArgumentException("Estoque insuficiente para o produto " + product.getName());
+        }
 
         saleDAO.update(sale);
     }
