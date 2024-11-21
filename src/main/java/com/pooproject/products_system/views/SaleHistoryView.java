@@ -246,14 +246,13 @@ public class SaleHistoryView extends JFrame {
 
         private JTable jTablePurchaseHistory;
         private PurchaseHistoryTableModel purchaseHistoryTableModel;
-        private JButton jButtonViewDetails;
 
         public CustomerHistoryView(Sale sale) {
-            setTitle("Histórico de Compras - Cliente: " + sale.getCustomer().getName());
+            setTitle("Histórico de Vendas - Cliente: " + sale.getCustomer().getName());
             setSize(500, 300);
             setLocationRelativeTo(null);
 
-            JLabel jLabelTitle = new JLabel("Histórico de Compras", JLabel.CENTER);
+            JLabel jLabelTitle = new JLabel("Histórico de Vendas", JLabel.CENTER);
             jLabelTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
             purchaseHistoryTableModel = new PurchaseHistoryTableModel();
@@ -270,8 +269,7 @@ public class SaleHistoryView extends JFrame {
 
             JScrollPane jScrollPane = new JScrollPane(jTablePurchaseHistory);
 
-            jButtonViewDetails = new JButton("Ver Detalhes");
-            jButtonViewDetails.addActionListener(e -> showPurchaseDetails());
+
 
             GroupLayout layout = new GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
@@ -282,8 +280,7 @@ public class SaleHistoryView extends JFrame {
                             .addGroup(layout.createSequentialGroup()
                                     .addContainerGap()
                                     .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                            .addComponent(jScrollPane, GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
-                                            .addComponent(jButtonViewDetails, GroupLayout.Alignment.TRAILING))
+                                            .addComponent(jScrollPane, GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))
                                     .addContainerGap())
             );
 
@@ -294,19 +291,7 @@ public class SaleHistoryView extends JFrame {
                             .addGap(20)
                             .addComponent(jScrollPane, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
                             .addGap(18)
-                            .addComponent(jButtonViewDetails)
-                            .addGap(20)
             );
-        }
-
-        private void showPurchaseDetails() {
-            int selectedRow = jTablePurchaseHistory.getSelectedRow();
-            if (selectedRow >= 0) {
-                Purchase selectedPurchase = purchaseHistoryTableModel.getPurchaseAt(selectedRow);
-                new PurchaseDetailsView(selectedPurchase).setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "Selecione uma compra para ver os detalhes.");
-            }
         }
 
         private static class PurchaseHistoryTableModel extends AbstractTableModel {
@@ -359,11 +344,11 @@ public class SaleHistoryView extends JFrame {
         public static class PurchaseDetailsView extends JFrame {
 
             public PurchaseDetailsView(Purchase purchase) {
-                setTitle("Detalhes da Compra");
+                setTitle("Detalhes da Venda");
                 setSize(400, 300);
                 setLocationRelativeTo(null);
 
-                JLabel jLabelTitle = new JLabel("Detalhes da Compra", JLabel.CENTER);
+                JLabel jLabelTitle = new JLabel("Detalhes da Venda", JLabel.CENTER);
                 jLabelTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
                 JPanel panel = new JPanel();
