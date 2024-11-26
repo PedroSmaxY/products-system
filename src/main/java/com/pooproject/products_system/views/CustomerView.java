@@ -16,10 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.swing.*;
 
-/**
- *
- * @author Pedro Henrique
- */
 public class CustomerView extends javax.swing.JFrame {
 
     private CustomerService customerService;
