@@ -50,13 +50,11 @@ public class SaleHistoryView extends JFrame {
         saleTableModel = new SaleTableModel();
         jTableSales = new JTable(saleTableModel);
 
-        // Adicionando ordenação
         TableRowSorter<SaleTableModel> sorter = new TableRowSorter<>(saleTableModel);
         jTableSales.setRowSorter(sorter);
 
         JScrollPane jScrollPane = new JScrollPane(jTableSales);
 
-        // Adicionando os campos de data e cliente
         JLabel startDateLabel = new JLabel("Data Início:");
         JLabel endDateLabel = new JLabel("Data Fim:");
         JLabel customerLabel = new JLabel("Cliente:");

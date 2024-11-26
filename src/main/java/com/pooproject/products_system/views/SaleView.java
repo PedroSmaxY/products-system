@@ -29,7 +29,7 @@ public class SaleView extends javax.swing.JFrame {
     private JButton jButtonSelectProduct;
     private JButton jButtonAddProduct;
     private JButton jButtonSaveSale;
-    private JButton jButtonCancelSale; // Novo botão para cancelar venda
+    private JButton jButtonCancelSale;
 
     private Customer activeCustomer;
     private List<ProductSaleDTO> activeProducts;
@@ -104,14 +104,13 @@ public class SaleView extends javax.swing.JFrame {
         tableSales = new JTable(new DefaultTableModel(new Object[]{"Produto", "Quantidade", "Preço", "Total", "Deletar"}, 0)) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 4;  // Somente a coluna "Deletar" será clicável
+                return column == 4;
             }
         };
 
         tableSales.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                // Exibe o emoji de lixeira na coluna "Deletar"
                 JLabel label = new JLabel("🗑️", JLabel.CENTER);
                 return label;
             }
@@ -122,12 +121,11 @@ public class SaleView extends javax.swing.JFrame {
                 int row = tableSales.rowAtPoint(e.getPoint());
                 int column = tableSales.columnAtPoint(e.getPoint());
 
-                // Verifica se o clique foi na coluna "Deletar"
                 if (column == 4) {
                     int confirm = JOptionPane.showConfirmDialog(frame, "Você tem certeza que deseja deletar este item?", "Confirmar Deleção", JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
                         DefaultTableModel model = (DefaultTableModel) tableSales.getModel();
-                        model.removeRow(row);  // Remove a linha selecionada
+                        model.removeRow(row);
                     }
                 }
             }
@@ -289,12 +287,10 @@ public class SaleView extends javax.swing.JFrame {
     }
 
 
-    // Método para abrir a tela de seleção de produtos com pesquisa
         private void abrirSelecaoProduto() {
             JFrame produtoFrame = new JFrame("Selecionar Produto");
             produtoFrame.setSize(600, 400);
 
-            // Painel de pesquisa
             JPanel panelSearch = new JPanel(new BorderLayout());
             JTextField searchField = new JTextField();
             panelSearch.add(new JLabel("Pesquisar Produto:"), BorderLayout.WEST);
@@ -312,7 +308,6 @@ public class SaleView extends javax.swing.JFrame {
             produtoFrame.add(panelSearch, BorderLayout.NORTH);
             produtoFrame.add(scrollPane, BorderLayout.CENTER);
 
-            // Filtro de pesquisa
             searchField.addKeyListener(new KeyAdapter() {
                 public void keyReleased(KeyEvent e) {
                     String searchText = searchField.getText().toLowerCase();
@@ -353,7 +348,6 @@ public class SaleView extends javax.swing.JFrame {
             produtoFrame.setVisible(true);
         }
 
-        // Método para adicionar produto à venda
         private void adicionarProduto() {
             String customerName = jTextClient.getText();
             String productName = jTextProduct.getText();
