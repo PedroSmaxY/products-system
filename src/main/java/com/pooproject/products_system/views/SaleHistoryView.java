@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
@@ -160,26 +161,45 @@ public class SaleHistoryView extends JFrame {
     }
 
     private void exportToCSV() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Salvar como...");
-        int userSelection = fileChooser.showSaveDialog(this);
+        int selectedRow = jTableSales.getSelectedRow();
 
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            try (PrintWriter writer = new PrintWriter(fileChooser.getSelectedFile() + ".csv")) {
-                writer.println("ID,Cliente,Data");
-                for (Sale sale : filteredSales) {
-                    writer.printf("%d,%s,%s%n",
-                            sale.getId(),
-                            sale.getCustomer().getName(),
-                            sale.getCurrentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                    );
+        if (selectedRow >= 0) {
+            Sale selectedSale = saleTableModel.getSaleAt(selectedRow);
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Salvar como...");
+            int userSelection = fileChooser.showSaveDialog(this);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                try (PrintWriter writer = new PrintWriter(fileChooser.getSelectedFile() + ".csv")) {
+                    writer.println("ID,Cliente,Data,Produto,Quantidade,Preço Unitário,Preço Total");
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                    String saleDateFormatted = selectedSale.getCurrentDate().format(formatter);
+                    for (var productSale : selectedSale.getProductSales()) {
+                        writer.printf("%d,%s,%s,%s,%d,%.2f,%.2f%n",
+                                selectedSale.getId(),
+                                selectedSale.getCustomer().getName(),
+                                saleDateFormatted,
+                                productSale.getProduct().getName(),
+                                productSale.getQuantity(),
+                                productSale.getPrice(),
+                                productSale.getPrice().multiply(BigDecimal.valueOf(productSale.getQuantity()))
+                        );
+                    }
+
+                    JOptionPane.showMessageDialog(this, "Exportado com sucesso!");
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Erro ao exportar: " + ex.getMessage());
                 }
-                JOptionPane.showMessageDialog(this, "Exportado com sucesso!");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao exportar: " + ex.getMessage());
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione uma venda para exportar.");
         }
     }
+
 
     private void showCustomerHistory() {
         int selectedRow = jTableSales.getSelectedRow();

@@ -62,7 +62,7 @@ public class MainView extends javax.swing.JFrame {
         jButtonAuthors = new javax.swing.JButton();
 
         jButtonAuthors.setFont(new java.awt.Font("Segoe UI", 0, 16));
-        jButtonAuthors.setText("Autores");
+        jButtonAuthors.setText("Sobre");
         jButtonAuthors.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) { jButtonAuthors(evt); }
         });
@@ -130,7 +130,7 @@ public class MainView extends javax.swing.JFrame {
     }
 
     private void jButtonAuthors(java.awt.event.ActionEvent evt) {
-        new AuthorsView().setVisible(true);
+        new AboutView().setVisible(true);
     }
 
     public static void main(String args[]) {

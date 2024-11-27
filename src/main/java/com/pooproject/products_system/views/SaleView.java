@@ -284,6 +284,10 @@ public class SaleView extends javax.swing.JFrame {
 
         DefaultTableModel model = (DefaultTableModel) tableSales.getModel();
         model.setRowCount(0);
+
+        activeProducts.clear();
+        activeCustomer = null;
+        activeProduct = null;
     }
 
 
@@ -348,33 +352,42 @@ public class SaleView extends javax.swing.JFrame {
             produtoFrame.setVisible(true);
         }
 
-        private void adicionarProduto() {
-            String customerName = jTextClient.getText();
-            String productName = jTextProduct.getText();
-            String quantityText = jTextQuantity.getText();
-            String priceText = jTextPrice.getText();
-            if (activeProduct != null) {
-                activeProducts.add(new ProductSaleDTO(activeProduct, Integer.valueOf(quantityText)));
-            }
+    private void adicionarProduto() {
+        BigDecimal totalVenda = BigDecimal.ZERO;
 
-            if (customerName.isEmpty() || productName.isEmpty() || quantityText.isEmpty() || priceText.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Preencha todos os campos!");
-                return;
-            }
+        String customerName = jTextClient.getText();
+        String productName = jTextProduct.getText();
+        String quantityText = jTextQuantity.getText();
+        String priceText = jTextPrice.getText();
 
-            int quantity = Integer.parseInt(quantityText);
-            BigDecimal price = new BigDecimal(priceText);
-
-            BigDecimal total = price.multiply(new BigDecimal(quantity));
-            jTextTotal.setText(total.toString());
-
-            DefaultTableModel model = (DefaultTableModel) tableSales.getModel();
-            model.addRow(new Object[]{productName, quantity, price, total});
-
-            jTextProduct.setText("");
-            jTextQuantity.setText("");
-            jTextPrice.setText("");
+        if (activeProduct != null) {
+            activeProducts.add(new ProductSaleDTO(activeProduct, Integer.valueOf(quantityText)));
         }
+
+        if (customerName.isEmpty() || productName.isEmpty() || quantityText.isEmpty() || priceText.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "Preencha todos os campos!");
+            return;
+        }
+
+        int quantity = Integer.parseInt(quantityText);
+        BigDecimal price = new BigDecimal(priceText);
+
+        BigDecimal total = price.multiply(new BigDecimal(quantity));
+        jTextTotal.setText(total.toString());
+
+        DefaultTableModel model = (DefaultTableModel) tableSales.getModel();
+        model.addRow(new Object[]{productName, quantity, price, total});
+
+        jTextProduct.setText("");
+        jTextQuantity.setText("");
+        jTextPrice.setText("");
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            totalVenda = totalVenda.add((BigDecimal) model.getValueAt(i, 3));
+        }
+
+        jTextTotal.setText(totalVenda.toString());
+    }
 
     private void salvarVenda() {
         try {
