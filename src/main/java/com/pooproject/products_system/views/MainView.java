@@ -20,7 +20,7 @@ public class MainView extends javax.swing.JFrame {
         jButtonProduct = new javax.swing.JButton();
         jButtonSale = new javax.swing.JButton();
         jButtonSaleHistory = new javax.swing.JButton();
-        jButtonAuthors = new javax.swing.JButton();
+        jButtonAbout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Menu Inicial");
@@ -59,12 +59,12 @@ public class MainView extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) { jButtonSaleHistoryActionPerformed(evt); }
         });
 
-        jButtonAuthors = new javax.swing.JButton();
+        jButtonAbout = new javax.swing.JButton();
 
-        jButtonAuthors.setFont(new java.awt.Font("Segoe UI", 0, 16));
-        jButtonAuthors.setText("Sobre");
-        jButtonAuthors.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) { jButtonAuthors(evt); }
+        jButtonAbout.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        jButtonAbout.setText("Sobre");
+        jButtonAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) { jButtonAboutActionPerformed(evt); }
         });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -84,7 +84,7 @@ public class MainView extends javax.swing.JFrame {
                                                         .addComponent(jButtonCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                         .addComponent(jButtonSale, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                         .addComponent(jButtonSaleHistory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(jButtonAuthors, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                                        .addComponent(jButtonAbout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGap(139, 139, 139)
                                                 .addComponent(jLabelImage)))
@@ -106,7 +106,7 @@ public class MainView extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jButtonSaleHistory)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButtonAuthors)
+                                .addComponent(jButtonAbout)
                                 .addGap(18, 18, 18))
         );
 
@@ -129,7 +129,7 @@ public class MainView extends javax.swing.JFrame {
         new ProductView().setVisible(true);
     }
 
-    private void jButtonAuthors(java.awt.event.ActionEvent evt) {
+    private void jButtonAboutActionPerformed(java.awt.event.ActionEvent evt) {
         new AboutView().setVisible(true);
     }
 
@@ -164,5 +164,5 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSaleHistory;
     private javax.swing.JLabel jLabelImage;
     private javax.swing.JLabel jLabelTitle;
-    private javax.swing.JButton jButtonAuthors;
+    private javax.swing.JButton jButtonAbout;
 }
