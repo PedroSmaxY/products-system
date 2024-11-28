@@ -17,7 +17,8 @@ public class AboutView extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         panel.add(titleLabel);
 
-        panel.add(new JLabel("Ano que foi Desenvolvido: 2024", SwingConstants.CENTER));
+        panel.add(new JLabel("Desenvolvido em: 2024", SwingConstants.CENTER));
+        panel.add(new JLabel("Versão: 1.0.1", SwingConstants.CENTER));
 
         JLabel descriptionTitleLabel = new JLabel("Descrição:", SwingConstants.CENTER);
         descriptionTitleLabel.setFont(new Font("Arial", Font.BOLD, 16));
