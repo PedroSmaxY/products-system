@@ -1,6 +1,7 @@
 package com.pooproject.products_system.views;
 
 import com.pooproject.products_system.domain.customer.Customer;
+import com.pooproject.products_system.domain.productSale.ProductSale;
 import com.pooproject.products_system.domain.sale.Sale;
 import com.pooproject.products_system.services.CustomerService;
 import com.pooproject.products_system.services.SaleService;
@@ -161,44 +162,61 @@ public class SaleHistoryView extends JFrame {
     }
 
     private void exportToCSV() {
-        int selectedRow = jTableSales.getSelectedRow();
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Salvar como...");
 
-        if (selectedRow >= 0) {
-            Sale selectedSale = saleTableModel.getSaleAt(selectedRow);
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
 
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Salvar como...");
-            int userSelection = fileChooser.showSaveDialog(this);
-
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-                try (PrintWriter writer = new PrintWriter(fileChooser.getSelectedFile() + ".csv")) {
-                    writer.println("ID,Cliente,Data,Produto,Quantidade,Preço Unitário,Preço Total");
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-                    String saleDateFormatted = selectedSale.getCurrentDate().format(formatter);
-                    for (var productSale : selectedSale.getProductSales()) {
-                        writer.printf("%d,%s,%s,%s,%d,%.2f,%.2f%n",
-                                selectedSale.getId(),
-                                selectedSale.getCustomer().getName(),
-                                saleDateFormatted,
-                                productSale.getProduct().getName(),
-                                productSale.getQuantity(),
-                                productSale.getPrice(),
-                                productSale.getPrice().multiply(BigDecimal.valueOf(productSale.getQuantity()))
-                        );
-                    }
-
-                    JOptionPane.showMessageDialog(this, "Exportado com sucesso!");
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Erro ao exportar: " + ex.getMessage());
-                }
+            if (!filePath.endsWith(".csv")) {
+                filePath += ".csv";
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione uma venda para exportar.");
+
+            try (PrintWriter writer = new PrintWriter(filePath)) {
+                writer.println("ID,Cliente,Data,Quantidade de Produtos,Valor Total da Venda");
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                for (int i = 0; i < saleTableModel.getRowCount(); i++) {
+                    Sale sale = saleTableModel.getSaleAt(i);
+
+                    int totalQuantity = sale.getProductSales().stream()
+                            .mapToInt(ProductSale::getQuantity)
+                            .sum();
+
+                    BigDecimal totalValue = sale.getProductSales().stream()
+                            .map(productSale -> productSale.getPrice().multiply(BigDecimal.valueOf(productSale.getQuantity())))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    String saleDateFormatted = sale.getCurrentDate().format(formatter);
+
+                    String line = String.format(
+                            "%d,%s,%s,%d,%.2f",
+                            sale.getId(),
+                            escapeFieldForCSV(sale.getCustomer().getName()),
+                            saleDateFormatted,
+                            totalQuantity,
+                            totalValue
+                    );
+                    writer.println(line);
+                }
+
+                JOptionPane.showMessageDialog(this, "Exportado com sucesso!");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao exportar: " + ex.getMessage());
+            }
         }
     }
+
+    private String escapeFieldForCSV(String field) {
+        if (field.contains(",") || field.contains("\"") || field.contains("\n")) {
+            field = field.replace("\"", "\"\"");
+            return "\"" + field + "\"";
+        }
+        return field;
+    }
+
 
 
     private void showCustomerHistory() {
